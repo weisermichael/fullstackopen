@@ -1,5 +1,26 @@
 import React, { useState } from 'react'
 
+const DisplayPerson = ( {toShow} ) => (
+  <>
+    <h2>Numbers</h2>
+    {toShow.map(person=> <p key={person.name}>{person.name} {person.number}</p>)}
+  </>
+)
+
+const PersonForm = ( {handleSubmit, handleNameChange, handleNumChange, newName, newNum}) => (
+  <form onSubmit={handleSubmit}>
+  <div> name:   <input value={newName} onChange={handleNameChange}/> </div>
+  <div> number: <input value={newNum}  onChange={handleNumChange}></input> </div>
+  <div>
+    <button type="submit">add</button>
+  </div>
+</form>
+)
+
+const Filter = ( {handleFilter} ) => (
+  <div> filter shown with <input onChange={handleFilter}></input></div>
+)
+
 const App = () => {
   const [ persons, setPersons ] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -7,16 +28,18 @@ const App = () => {
     { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
     { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
   ]) 
+
   const [ newName, setNewName ] = useState('')
   const [ newNum, setNewNum ] = useState('')
   const [ filterParam, setFilterParam ] = useState('')
 
-  const handleNameChange = (event) => {
-    setNewName(event.target.value)
-  }
-
-  const handleNumChange = (event) => {
-    setNewNum(event.target.value)
+  const handleChange = (func) => {
+    const handler = (event) => {
+      func(event.target.value)
+    } 
+    return(
+      handler
+    )
   }
 
   const handleSubmit = (event) => {
@@ -41,17 +64,14 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div> filter shown with <input onChange={handleFilter}></input></div>
+      <Filter handleFilter={handleFilter} />
       <h2>add a new</h2>
-      <form onSubmit={handleSubmit}>
-        <div> name:   <input value={newName} onChange={handleNameChange}/> </div>
-        <div> number: <input value={newNum}  onChange={handleNumChange}></input> </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      {toShow.map(person=> <p key={person.name}>{person.name} {person.number}</p>)}
+      <PersonForm handleSubmit={handleSubmit} 
+                  handleNameChange={handleChange(setNewName)} 
+                  handleNumChange={handleChange(setNewNum)}
+                  newName={newName}
+                  newNum={newNum} />
+      <DisplayPerson toShow={toShow} />
     </div>
   )
 }
