@@ -2,7 +2,7 @@ import axios from 'axios'
 const baseUrl = 'http://localhost:3001/persons'
 
 const getAll = () => {
-    return axios.get("http://localhost:3001/persons").then(response => response.data)
+    return axios.get("http://localhost:3001/persons")
 }
 
 const create = newObj => {
@@ -16,8 +16,14 @@ const remove = (id) => {
     axios.delete(toDelete)
 }
 
+const update = (id, newObj) => {
+    const url = baseUrl + '/' + id 
+    axios.put(url, newObj)
+}
+
 export default {
     create: create,
     remove: remove,
-    getAll: getAll
+    getAll: getAll,
+    update: update
 }

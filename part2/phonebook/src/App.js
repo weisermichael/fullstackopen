@@ -6,7 +6,7 @@ const DisplayPerson = ( {toShow, handleDelete} ) => (
   <>
     <h2>Numbers</h2>
     {toShow.map(person=>  <p key={person.name}>{person.name} {person.number}
-                            <button onClick={() => handleDelete(person.id)}>delete</button>
+                            <button onClick={() => handleDelete(person.name, person.id)}>delete</button>
                           </p>)}
   </>
 )
@@ -29,7 +29,7 @@ const App = () => {
   const [ persons, setPersons ] = useState([]) 
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then(response => setPersons(response.data))
+    phonebookService.getAll().then(response => setPersons(response.data))
   }, [])
 
   const [ newName, setNewName ] = useState('')
@@ -46,8 +46,9 @@ const App = () => {
   }
 
   const handleSubmit = (event) => {
+    event.preventDefault()
     if ((persons.map(p=>p.name)).indexOf(newName) === -1){  //check if name already exists
-      event.preventDefault()
+      //event.preventDefault()
       const newPerson = {name: newName, number: newNum, id: persons.length+1}
       phonebookService.create(newPerson)
       setPersons(persons.concat(newPerson))
@@ -55,13 +56,24 @@ const App = () => {
       setNewNum('')
     }
     else{
-      alert(`${newName} is already added to phonebook!`)
+      const result = window.confirm(`${newName} is already added to phonebook. Replace old number with a new number?`)
+      if (result){
+        let person = persons.filter(p=> p.name === newName)[0]
+        //const id = (persons.map(p=>p.name)).indexOf(newName) + 1
+        const id = person.id
+        const newPerson = {...person, number: newNum}
+        phonebookService.update(id, newPerson)
+        setPersons(persons.map(p => p.id !== id ? p : newPerson))
+      }
     }
   }
 
-  const handleDelete = (id) => {
-    phonebookService.remove(id)
-    setPersons(persons.filter(p => p.id !== id))
+  const handleDelete = (name, id) => {
+    const result = window.confirm(`Delete ${name}?`)
+    if (result) {
+      phonebookService.remove(id)
+      setPersons(persons.filter(p => p.id !== id))
+    }
   }
 
   const handleFilter = (event) => {
