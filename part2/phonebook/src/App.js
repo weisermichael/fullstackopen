@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import phonebokService from './services/phonebook'
 
 const DisplayPerson = ( {toShow} ) => (
   <>
@@ -46,8 +47,7 @@ const App = () => {
     if ((persons.map(p=>p.name)).indexOf(newName) === -1){  //check if name already exists
       event.preventDefault()
       const newPerson = {name: newName, number: newNum, id: persons.length+1}
-      axios.post('http://localhost:3001/persons', newPerson)
-           .then(response=>console.log(response))
+      phonebokService.create(newPerson)
       setPersons(persons.concat(newPerson))
       setNewName('')
       setNewNum('')
