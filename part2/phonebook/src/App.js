@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import phonebokService from './services/phonebook'
+import phonebookService from './services/phonebook'
 
-const DisplayPerson = ( {toShow} ) => (
+const DisplayPerson = ( {toShow, handleDelete} ) => (
   <>
     <h2>Numbers</h2>
-    {toShow.map(person=> <p key={person.name}>{person.name} {person.number}</p>)}
+    {toShow.map(person=>  <p key={person.name}>{person.name} {person.number}
+                            <button onClick={() => handleDelete(person.id)}>delete</button>
+                          </p>)}
   </>
 )
 
@@ -47,7 +49,7 @@ const App = () => {
     if ((persons.map(p=>p.name)).indexOf(newName) === -1){  //check if name already exists
       event.preventDefault()
       const newPerson = {name: newName, number: newNum, id: persons.length+1}
-      phonebokService.create(newPerson)
+      phonebookService.create(newPerson)
       setPersons(persons.concat(newPerson))
       setNewName('')
       setNewNum('')
@@ -55,6 +57,11 @@ const App = () => {
     else{
       alert(`${newName} is already added to phonebook!`)
     }
+  }
+
+  const handleDelete = (id) => {
+    phonebookService.remove(id)
+    setPersons(persons.filter(p => p.id !== id))
   }
 
   const handleFilter = (event) => {
@@ -73,7 +80,7 @@ const App = () => {
                   handleNumChange={handleChange(setNewNum)}
                   newName={newName}
                   newNum={newNum} />
-      <DisplayPerson toShow={toShow} />
+      <DisplayPerson toShow={toShow} handleDelete={handleDelete}/>
     </div>
   )
 }
