@@ -2,6 +2,25 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import phonebookService from './services/phonebook'
 
+const Notification = ({ message, type }) => {
+  if (message === null) {
+    return null
+  }
+
+  if (type === "error"){
+    return (
+      <div className='error'>
+        {message}
+      </div>
+    )
+  }
+  return (
+    <div className='msg'>
+      {message}
+    </div>
+  )
+}
+
 const DisplayPerson = ( {toShow, handleDelete} ) => (
   <>
     <h2>Numbers</h2>
@@ -35,6 +54,8 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNum, setNewNum ] = useState('')
   const [ filterParam, setFilterParam ] = useState('')
+  const [ message, setMessage ] = useState(null)
+  const [ type, setType ] = useState('error')
 
   const handleChange = (func) => {
     const handler = (event) => {
@@ -52,6 +73,11 @@ const App = () => {
       const newPerson = {name: newName, number: newNum, id: persons.length+1}
       phonebookService.create(newPerson)
       setPersons(persons.concat(newPerson))
+      setType('notification')
+      setMessage(`${newName} added`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
       setNewName('')
       setNewNum('')
     }
@@ -64,6 +90,13 @@ const App = () => {
         const newPerson = {...person, number: newNum}
         phonebookService.update(id, newPerson)
         setPersons(persons.map(p => p.id !== id ? p : newPerson))
+        setType('notification')
+        setMessage(`${newName} updated`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+        setNewName('')
+        setNewNum('')
       }
     }
   }
@@ -84,7 +117,8 @@ const App = () => {
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
+      <Notification message={message} type={type} />
       <Filter handleFilter={handleFilter} />
       <h2>add a new</h2>
       <PersonForm handleSubmit={handleSubmit} 
