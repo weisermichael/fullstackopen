@@ -43,9 +43,11 @@ const App = () => {
   }
 
   const handleSubmit = (event) => {
-    if ((persons.map(p=>p.name)).indexOf(newName) === -1){
+    if ((persons.map(p=>p.name)).indexOf(newName) === -1){  //check if name already exists
       event.preventDefault()
       const newPerson = {name: newName, number: newNum, id: persons.length+1}
+      axios.post('http://localhost:3001/persons', newPerson)
+           .then(response=>console.log(response))
       setPersons(persons.concat(newPerson))
       setNewName('')
       setNewNum('')
