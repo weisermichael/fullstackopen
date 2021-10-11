@@ -88,15 +88,24 @@ const App = () => {
         //const id = (persons.map(p=>p.name)).indexOf(newName) + 1
         const id = person.id
         const newPerson = {...person, number: newNum}
-        phonebookService.update(id, newPerson)
-        setPersons(persons.map(p => p.id !== id ? p : newPerson))
-        setType('notification')
-        setMessage(`${newName} updated`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
-        setNewName('')
-        setNewNum('')
+        phonebookService.update(id, newPerson).then(response => {
+          setPersons(persons.map(p => p.id !== id ? p : newPerson))
+          setType('notification')
+          setMessage(`${newName} updated`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+          setNewName('')
+          setNewNum('')
+        }).catch(error => {
+          setType('error')
+          setMessage(`Information of ${newName} already removed from the server`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+          setNewName('')
+          setNewNum('')
+        })
       }
     }
   }

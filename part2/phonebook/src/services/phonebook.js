@@ -12,13 +12,13 @@ const create = newObj => {
 
 const remove = (id) => {
     const toDelete = baseUrl + '/' + id 
-    console.log(toDelete)
+    //console.log(toDelete)
     axios.delete(toDelete)
 }
 
 const update = (id, newObj) => {
     const url = baseUrl + '/' + id 
-    axios.put(url, newObj)
+    return axios.put(url, newObj)
 }
 
 export default {
