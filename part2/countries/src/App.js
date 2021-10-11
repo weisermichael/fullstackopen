@@ -1,7 +1,27 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
+const Weather = ({weatherData}) => {
+  const imgSrc = weatherData.current.weather_icons[0]
+  return (
+    <>
+      <b>temperature: </b>{weatherData.current.temperature} Celcius <br/>
+      <img src={imgSrc}/> <br/>
+      <b>wind: </b> {weatherData.current.wind_speed} mph direction {weatherData.current.wind_dir} <br/>
+    </>
+  )
+}
+
 const CountryInfo = ({i, countries, disp}) => {
+  const [weatherData, setWeatherData] = useState(null)
+  const api_key = process.env.REACT_APP_API_KEY
+  //console.log(process.env.REACT_APP_API_KEY);
+  const urlStr = "http://api.weatherstack.com/" + "current?access_key=" + api_key + "&query=" + countries[i].capital
+  useEffect(() =>{
+    console.log("effect")
+    axios.get(urlStr).then((response) => {setWeatherData(response.data)})
+  }, [])
+
   if (disp) {
     return (
       <>
@@ -14,6 +34,9 @@ const CountryInfo = ({i, countries, disp}) => {
           {Object.values(countries[i].languages).map((l, a) => <li key={a}>{l}</li>)}
         </ul>
         <img src={countries[i].flags.png} alt="flag" />
+        <br/>
+        <h2>Weather in {countries[i].capital}</h2>
+        {weatherData && <Weather weatherData={weatherData} /> }
       </>
     )
   }
@@ -25,6 +48,16 @@ const CountryInfo = ({i, countries, disp}) => {
 }
 
 const Display = ( {countries, search, namesSearched, commonNames, handleChange, handleClick, displayCountry} ) => {
+
+/*   const getWeather = (ind) => {
+    let weather = ""
+    const urlStr = "current?access_key=" + process.env.REACT_APP_API_KEY + "&query=" + countries[ind].capital
+    useEffect(() =>
+    axios.get("http://api.weatherstack.com/" + urlStr)
+         .then(response => weather=response.data))
+    return weather
+  }
+ */
   if (search.length === 0) {
     return (
       <div>
@@ -66,7 +99,6 @@ const Display = ( {countries, search, namesSearched, commonNames, handleChange, 
                                             onClick={handleClick}>show</button>
                                     
                                   </li>
-                                  
                                   <CountryInfo key={1+commonNames.indexOf(n)} 
                                                i={commonNames.indexOf(n)} 
                                                countries={countries} 
@@ -88,9 +120,8 @@ function App() {
   }
 
   const handleClick = (event) => {
-    console.log(event.target.parentElement.getAttribute('ind'))
     const newArr = [...displayCountry]
-    if (displayCountry[event.target.parentElement.getAttribute('ind')] == true) {
+    if (displayCountry[event.target.parentElement.getAttribute('ind')] === true) {
       newArr[event.target.parentElement.getAttribute('ind')] = ''
     }
     else{
@@ -105,6 +136,7 @@ function App() {
   
   const commonNames = countries.map(c => c.name.common)
   const namesSearched = commonNames.filter(n => n.toLowerCase().includes(search.toLowerCase()))
+
 
   return (
     <Display countries={countries}
