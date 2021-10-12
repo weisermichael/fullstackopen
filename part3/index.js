@@ -60,19 +60,19 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const body = request.body
     
-    if (!body.content) {
+    if (!body.name) {
         return(response.status(400).json({
-            error: "content missing"
+            error: "name missing"
         }))
     }
     const person = {
-        content: body.content,
-
+        name: body.name,
+        number: body.number
     }
-    const maxId = notes.length > 0 ? Math.max(...notes.map(n => n.id)) : 0
-    note.id = maxId + 1
-    notes = notes.concat(note)
-    response.json(note)
+    //const maxId = notes.length > 0 ? Math.max(...notes.map(n => n.id)) : 0
+    person.id = Math.floor(Math.random()*100)
+    persons = persons.concat(person)
+    response.json(persons)
 })
 
 const PORT = 3001
