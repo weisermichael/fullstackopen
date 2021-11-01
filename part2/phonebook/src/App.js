@@ -119,7 +119,7 @@ const App = () => {
   }
 
   const handleFilter = (event) => {
-    setFilterParam(event.target.value)
+    setFilterParam(event.target.value.toLowerCase())
   }
 
   const toShow = (!filterParam) ? persons : persons.filter(p=> p.name.toLowerCase().slice(0, filterParam.length) === filterParam)
