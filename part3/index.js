@@ -41,9 +41,12 @@ app.get('/', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-    const msg = `Phonebook has info for ${persons.length} people</br></br>
+    Note.find({}).then(p => {
+        const msg = `Phonebook has info for ${p.length} people</br></br>
                 ${new Date()}`
-    response.send(msg)
+        response.send(msg)
+    })
+    
 })
 
 app.get('/api/persons', (request, response) => {
@@ -52,7 +55,7 @@ app.get('/api/persons', (request, response) => {
     })
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     //const id = Number(request.params.id)
     /*const person = persons.find(p => p.id === id)
     if (person) {
@@ -71,10 +74,7 @@ app.get('/api/persons/:id', (request, response) => {
                 response.status(404).end()
             }
         })
-        .catch(error => {
-            console.log(error)
-            response.status(400).send({error: 'malformatted id'})
-        })
+        .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -119,6 +119,18 @@ app.post('/api/persons', (request, response) => {
         response.json(savedPerson)
     })
 })
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError'){
+        return response.status(400).send({error: 'malformatted id'})
+    }
+
+    next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
