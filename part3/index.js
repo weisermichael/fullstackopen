@@ -1,6 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+
+const Note = require('./models/phone')
 
 const app = express()
 
@@ -44,24 +47,45 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Note.find({}).then(notes =>{
+        response.json(notes)
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(p => p.id === id)
+    //const id = Number(request.params.id)
+    /*const person = persons.find(p => p.id === id)
     if (person) {
         response.json(person)
     }
     else {
         response.status(404).end()
-    }
+    } */
+
+    Note.findById(request.params.id)
+        .then(person => {
+            if (person) {
+                response.json(person)
+            }
+            else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => {
+            console.log(error)
+            response.status(400).send({error: 'malformatted id'})
+        })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
+   /*  const id = Number(request.params.id)
     persons = persons.filter(p => p.id !== id)
-    response.status(204).end()
+    response.status(204).end() */
+
+    Note.findByIdAndRemove(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
 })
 
 app.post('/api/persons', (request, response) => {
@@ -77,19 +101,23 @@ app.post('/api/persons', (request, response) => {
             error: "number missing"
         }))
     }
-    if (persons.map(p => p.name).indexOf(body.name) !== -1) {
+    /*if (persons.map(p => p.name).indexOf(body.name) !== -1) {
         return(response.status(400).json({
             error: "name must be unique"
         }))
-    }
-    const person = {
+    }*/
+    const person = new Note({
         name: body.name,
-        number: body.number
-    }
+        number: body.number,
+        date: new Date()
+    })
     //const maxId = notes.length > 0 ? Math.max(...notes.map(n => n.id)) : 0
-    person.id = Math.floor(Math.random()*100)
-    persons = persons.concat(person)
-    response.json(persons)
+    //person.id = Math.floor(Math.random()*100)
+    //persons = persons.concat(person)
+    //response.json(persons)
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
+    })
 })
 
 const PORT = process.env.PORT || 3001
