@@ -46,8 +46,9 @@ if (willSave) {
 
 else {
     Note.find({}).then(result => {
+        console.log('phonebook:')
         result.forEach(note => {
-          console.log(note)
+          console.log(note.name, note.number)
         })
         mongoose.connection.close()
         process.exit(1)
