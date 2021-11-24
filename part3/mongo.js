@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
 
 let willSave = true
 
@@ -8,7 +9,7 @@ if (process.argv.length == 3) {
 
 if (process.argv.length < 5 && process.argv.length != 3) {
     console.log('Please provide the entry as an argument: node mongo.js <password> <name> <number>')
-    console.log(process.argv.length)
+    //console.log(process.argv.length)
     process.exit(1)
   }
 
@@ -25,6 +26,7 @@ const noteSchema = new mongoose.Schema({
   date: Date,
 })
 
+noteSchema.plugin(uniqueValidator)
 const Note = mongoose.model('Note', noteSchema)
 
 if (willSave) {

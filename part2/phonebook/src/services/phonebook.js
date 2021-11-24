@@ -1,13 +1,13 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/api/persons'
-//const baseUrl = '/api/persons'
+//const baseUrl = 'http://localhost:3001/api/persons'
+const baseUrl = '/api/persons'
 const getAll = () => {
     return axios.get(baseUrl)
 }
 
 const create = newObj => {
-    axios.post(baseUrl, newObj)
-         .then(response=>console.log(response))
+    return axios.post(baseUrl, newObj)
+            .then(response=>console.log(response))
 }
 
 const remove = (id) => {

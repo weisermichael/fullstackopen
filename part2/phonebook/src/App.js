@@ -69,17 +69,26 @@ const App = () => {
   const handleSubmit = (event) => {
     event.preventDefault()
     if ((persons.map(p=>p.name)).indexOf(newName) === -1){  //check if name already exists
-      //event.preventDefault()
-      const newPerson = {name: newName, number: newNum, id: persons.length+1}
-      phonebookService.create(newPerson)
-      setPersons(persons.concat(newPerson))
-      setType('notification')
-      setMessage(`${newName} added`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-      setNewName('')
-      setNewNum('')
+      const newPerson = {name: newName, number: newNum}
+      phonebookService.create(newPerson).then(response =>
+        {setPersons(persons.concat(newPerson))
+        setType('notification')
+        setMessage(`${newName} added`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+        setNewName('')
+        setNewNum('')
+      }).catch(error => {
+        setType('error')
+        console.log(error.response.data.error)
+        setMessage(`Validation failed: ${error.response.data.error}`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+        setNewName('')
+        setNewNum('')
+      })
     }
     else{
       const result = window.confirm(`${newName} is already added to phonebook. Replace old number with a new number?`)
@@ -88,7 +97,7 @@ const App = () => {
         //const id = (persons.map(p=>p.name)).indexOf(newName) + 1
         const id = person.id
         const newPerson = {...person, number: newNum}
-        phonebookService.update(id, newPerson).then(response => {
+        phonebookService.create(newPerson).then(response => {
           setPersons(persons.map(p => p.id !== id ? p : newPerson))
           setType('notification')
           setMessage(`${newName} updated`)
@@ -99,7 +108,8 @@ const App = () => {
           setNewNum('')
         }).catch(error => {
           setType('error')
-          setMessage(`Information of ${newName} already removed from the server`)
+          console.log(error.response.data.error)
+          setMessage(`Validation failed: ${error.response.data.error}`)
           setTimeout(() => {
             setMessage(null)
           }, 5000)

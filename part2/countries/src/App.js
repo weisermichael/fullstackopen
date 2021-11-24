@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+require('dotenv').config()
 
 const Weather = ({weatherData}) => {
   const imgSrc = weatherData.current.weather_icons[0]
