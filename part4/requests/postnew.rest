@@ -1,9 +1,2 @@
-POST http://localhost:3003/api/blogs
+GET http://localhost:3003/api/blogs
 content-type: application/json
-
-{
-    "title": "Michael's blog",
-    "author": "Michael Weiser",
-    "url": "michael.com",
-    "likes": 100
-}
