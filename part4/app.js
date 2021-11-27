@@ -2,10 +2,10 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
-//const Blog = require('./models/blog.js')
 const blogRouter = require('./controllers/blogrouter')
+const config = require('./utils/config')
 
-const mongoUrl = 'mongodb+srv://fullstack:test@cluster0.yxyho.mongodb.net/bloglist?retryWrites=true&w=majority'
+const mongoUrl = config.MONGODB_URI
 
 mongoose.connect(mongoUrl)
 
