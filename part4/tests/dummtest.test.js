@@ -87,3 +87,12 @@ describe("favorite blog", () => {
     })
   })
 })
+
+describe("most blogs", () => {
+  test("of many blogs", () => {
+    expect(listHelper.mostBlogs(blogs)).toEqual({
+      author: "Robert C. Martin",
+      blogs: 3
+    })
+  })
+})
