@@ -5,21 +5,24 @@ const dummy = (blogs) => {
 const totalLikes = (blogs) => {
     return blogs.reduce((prev, current) => {
         return prev + current.likes
-}, 0)
+}, 0)}
+
+const favortieBlog = (blogs) => {
+    let favBlog = blogs[0]
+
+    blogs.forEach((item) => {
+        if (item.likes > favBlog.likes){
+            favBlog = item
+        }
+    })
+
+    return {
+        title: favBlog.title,
+        author: favBlog.author,
+        likes: favBlog.likes
+    }
 }
 
-const listWithOneBlog = [
-    {
-        "_id": "619eebfe67099cc1e05759eb",
-        "title": "Michael's blog",
-        "author": "Michael Weiser",
-        "url": "michael.com",
-        "likes": 100,
-        "__v": 0
-    }
-]
-console.log(totalLikes(listWithOneBlog))
-
 module.exports = {
-    dummy, totalLikes
+    dummy, totalLikes, favortieBlog
 }
