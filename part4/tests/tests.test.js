@@ -48,6 +48,23 @@ test("property named id, not _id", async () => {
     expect(blogs.body[0].id).toBeDefined()
        
 })
+
+test("POST request adds blog", async () => {
+    let newBlog = {
+        "title": "Fourth Test Blog",
+        "author": "Fourth Test Author",
+        "url": "testblog.biz",
+        "likes": 6
+    }
+
+    await api.post("/api/blogs")
+             .send(newBlog)
+             .expect(201)
+    
+    const blogs = await api.get("/api/blogs")
+    expect(blogs.body.length).toBe(testBlogList.length + 1)
+    expect(blogs.body[testBlogList.length]["title"]).toBe("Fourth Test Blog")
+})
 afterAll(() => {
     mongoose.connection.close
 })
