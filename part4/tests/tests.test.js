@@ -43,6 +43,11 @@ test("get request returns list", async () => {
     expect(blogs.body.length).toBe(3)
 }, 100000)
 
+test("property named id, not _id", async () => {
+    const blogs = await api.get("/api/blogs")
+    expect(blogs.body[0].id).toBeDefined()
+       
+})
 afterAll(() => {
     mongoose.connection.close
 })
