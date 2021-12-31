@@ -65,6 +65,22 @@ test("POST request adds blog", async () => {
     expect(blogs.body.length).toBe(testBlogList.length + 1)
     expect(blogs.body[testBlogList.length]["title"]).toBe("Fourth Test Blog")
 })
+
+test("missing likes default to 0", async () => {
+    let newBlog = {
+        "title": "Fourth Test Blog",
+        "author": "Fourth Test Author",
+        "url": "testblog.biz"
+    }
+
+    await api.post('/api/blogs')
+             .send(newBlog)
+             .expect(201)
+
+    const blogs = await api.get('/api/blogs')
+    expect(blogs.body[testBlogList.length]['likes']).toBe(0)
+
+})
 afterAll(() => {
     mongoose.connection.close
 })
