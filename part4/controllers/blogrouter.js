@@ -23,11 +23,19 @@ blogRouter.post('/', async (request, response) => {
   if (!request.body.hasOwnProperty('likes')) {
     request.body['likes'] = 0
   }
+
+  if (!request.body.hasOwnProperty('author')) {
+    response.status(400).send('Bad Request')
+  }
+  else if (!request.body.hasOwnProperty('title')) {
+    response.status(400).send('Bad Request')
+  }
+  else {
     const blog = new Blog(request.body)
 
     const result = await blog.save()
     response.status(201).json(result)
-
+  }
   })
 
 module.exports = blogRouter

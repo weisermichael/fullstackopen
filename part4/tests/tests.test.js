@@ -50,7 +50,7 @@ test("property named id, not _id", async () => {
 })
 
 test("POST request adds blog", async () => {
-    let newBlog = {
+    const newBlog = {
         "title": "Fourth Test Blog",
         "author": "Fourth Test Author",
         "url": "testblog.biz",
@@ -67,7 +67,7 @@ test("POST request adds blog", async () => {
 })
 
 test("missing likes default to 0", async () => {
-    let newBlog = {
+    const newBlog = {
         "title": "Fourth Test Blog",
         "author": "Fourth Test Author",
         "url": "testblog.biz"
@@ -80,6 +80,17 @@ test("missing likes default to 0", async () => {
     const blogs = await api.get('/api/blogs')
     expect(blogs.body[testBlogList.length]['likes']).toBe(0)
 
+})
+
+test("responds 400 to missing title and author", async () => {
+    const newBlog = {
+        "url": "testblog.biz",
+        "likes": 6
+    }
+
+    await api.post("/api/blogs")
+             .send(newBlog)
+             .expect(400)
 })
 afterAll(() => {
     mongoose.connection.close
