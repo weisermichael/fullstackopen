@@ -10,22 +10,22 @@ beforeEach(async () => {
     const newUser = new User({
         name: "root",
         userName: "rootuser",
-        password: admin
+        password: "admin"
     })
     await newUser.save()
 })
 
-test("one use initially", async () => {
+test("one blog initially", async () => {
     const users = await api.get("/api/users")
                             .expect(200)
     expect(users.body.length).toBe(1)
-})
+}, 100000)
 
 describe("posting invalid user returns 400 and does not post", () => {
     test("duplicate username", async () => {
         const invalidUser = {
-            name: "New User",
-            userName: "root",
+            name: "root2",
+            userName: "rootuser",
             password: "pass"
         }
         await api.post("/api/users")
@@ -34,7 +34,7 @@ describe("posting invalid user returns 400 and does not post", () => {
         const users = await api.get("/api/users")
                                .expect(200)
         expect(users.body.length).toBe(1)
-    })
+    }, 100000)
 })
 
 afterAll(() => {

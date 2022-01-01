@@ -60,8 +60,8 @@ test("POST request adds blog", async () => {
     await api.post("/api/blogs")
              .send(newBlog)
              .expect(201)
-    
     const blogs = await api.get("/api/blogs")
+    console.log(blogs.body)
     expect(blogs.body.length).toBe(testBlogList.length + 1)
     expect(blogs.body[testBlogList.length]["title"]).toBe("Fourth Test Blog")
 })
