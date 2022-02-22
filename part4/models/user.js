@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
     name: String,
     userName: {type: String, unique: true},
     passwordHash: String,
-    notes : [{
+    blogs : [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Blog'
     }]
@@ -16,6 +16,7 @@ userSchema.set('toJSON', {
         returnedDocument.id = document._id
         delete returnedDocument._id
         delete returnedDocument.__v
+        delete returnedDocument.passwordHash
     }
 })
 
