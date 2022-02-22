@@ -1,7 +1,0 @@
-UPDATE http://localhost:3001/api/persons/
-content-type: application/json
-
-{
-    "name": "Michael Weiser",
-    "number": "123-456-1234"
-}
