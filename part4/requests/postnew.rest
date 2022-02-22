@@ -1,8 +1,9 @@
 POST http://localhost:3003/api/blogs/
 content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiZXRvb3A2OSIsImlkIjoiNjIxNDlmNjY3MDMwMDlkYzQ4NGYzYzAyIiwiaWF0IjoxNjQ1NTIxNDcxfQ.StXYLy7bcjfUAab0Fq-dSRCLPkV92Tb5_Sb_wVs-RHI
 
 {
-    "title": "Audrey's Blog",
+    "title": "Audrey's Other Blog",
     "author": "Audrey Elinor",
     "url": "blog.gov",
     "likes": 9999

@@ -1,6 +1,7 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog.js')
 const User = require('../models/user.js')
+const jwt = require('jsonwebtoken')
 
 blogRouter.get('/', async (request, response) => {
     const blogs = await Blog.find({}).populate('user')
@@ -20,11 +21,18 @@ blogRouter.get('/:id', (request, response) => {
     })
 })
 
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')){
+    return authorization.substring(7)
+  }
+  return null
+}
+
 blogRouter.post('/', async (request, response) => {
   if (!request.body.hasOwnProperty('likes')) {
     request.body['likes'] = 0
   }
-
   if (!request.body.hasOwnProperty('author')) {
     response.status(400).send('Bad Request')
   }
@@ -33,22 +41,17 @@ blogRouter.post('/', async (request, response) => {
   }
   else {
     const blog = new Blog(request.body)
-
-    if (!request.body.hasOwnProperty('user')) {   //assign random user to blog being posted
-      user_author = await User.findOne( {name: request.body.author} ) //attempts to find user with blog authors name
-      random_user = await User.findOne()  //random user
-      if (user_author.name === request.body.author) { //if author has user, assign to blog
-        blog.user = user_author._id
-        user_author.blogs = user_author.blogs.concat(blog._id)
-        await user_author.save()
-      }
-      else{ //assign random user
-        blog.user = random_user._id
-        random_user.blogs = user_author.blogs.concat(blog._id)
-        await random_user.save()
-      }
-      
+    const token = getTokenFrom(request)
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if(!(decodedToken.id)){
+      return response.status(401).json({error: "token missing or invalid"})
     }
+    const user = await User.findById(decodedToken.id)
+
+    blog.user = user._id
+    user.blogs = user.blogs.concat(blog._id)
+    await user.save()
+
     const result = await blog.save()
     
     response.status(201).json(result)
