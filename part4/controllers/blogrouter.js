@@ -2,6 +2,7 @@ const blogRouter = require('express').Router()
 const Blog = require('../models/blog.js')
 const User = require('../models/user.js')
 const jwt = require('jsonwebtoken')
+const userExtractor = require("../utils/middleware").userExtractor
 
 blogRouter.get('/', async (request, response) => {
     const blogs = await Blog.find({}).populate('user')
@@ -21,15 +22,7 @@ blogRouter.get('/:id', (request, response) => {
     })
 })
 
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')){
-    return authorization.substring(7)
-  }
-  return null
-}
-
-blogRouter.post('/', async (request, response) => {
+blogRouter.post('/', userExtractor, async (request, response) => {
   if (!request.body.hasOwnProperty('likes')) {
     request.body['likes'] = 0
   }
@@ -41,14 +34,7 @@ blogRouter.post('/', async (request, response) => {
   }
   else {
     const blog = new Blog(request.body)
-    const token = request.token
-    //console.log(token)
-    const decodedToken = jwt.verify(token, process.env.SECRET)
-    if(!(decodedToken.id)){
-      return response.status(401).json({error: "token missing or invalid"})
-    }
-    const user = await User.findById(decodedToken.id)
-
+    const user = request.user
     blog.user = user._id
     user.blogs = user.blogs.concat(blog._id)
     await user.save()
@@ -59,14 +45,12 @@ blogRouter.post('/', async (request, response) => {
   }
   })
 
-blogRouter.delete('/:id', async (request, response) => {
-  const token = request.token
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  if(!(decodedToken.id)){
-    return response.status(401).json({error: "token missing or invalid"})
-  }
-  const user = await User.findById(decodedToken.id)
+blogRouter.delete('/:id', userExtractor, async (request, response) => {
+  const user = request.user
   const blog = await Blog.findById(request.params.id)
+  if(!blog){
+    return response.status(404).json({error: "id not found"})
+  }
   if(!(user._id.toString() === blog.user.toString())){
     return response.status(401).json({error: "token invalid"})
   }
