@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const userExtractor = require("../utils/middleware").userExtractor
 
 blogRouter.get('/', async (request, response) => {
-    const blogs = await Blog.find({}).populate('user')
+    const blogs = await Blog.find({})//.populate('user')
     response.json(blogs)
   })
   
