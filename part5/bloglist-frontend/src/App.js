@@ -9,6 +9,12 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
+
+  const handleLogout = () => {
+    window.localStorage.removeItem('blogAppUser') //remove user from local storage
+    setUser(null) //remove user from state
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -17,8 +23,10 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      window.localStorage.setItem('blogAppUser', JSON.stringify(user))
     } catch(exception){
-      
+      setErrorMessage("Wrong Credentials")
+      setTimeout(()=>setErrorMessage(null), 5000)
     }
   }
 
@@ -30,17 +38,23 @@ const App = () => {
     handleLogin: handleLogin
   }
 
-  useEffect(() => {
+  useEffect(() => { //get blogs
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )  
   }, [])
 
+  useEffect(() => { //if user saved in browser, log in
+    const userJSON = window.localStorage.getItem('blogAppUser')
+    if (userJSON) {
+      setUser(JSON.parse(userJSON))
+    }
+  }, [])
   return (
     <div>
-      
-        {user===null && <LoginForm {...loginFormProps} />}
-        {user !== null && <h2>{user.name} is logged in</h2>}
+      {errorMessage && <h1>{errorMessage}</h1>}
+      {user===null && <LoginForm {...loginFormProps} />}
+      {user !== null && <p>{user.name} is logged in <button onClick={handleLogout}>logout</button></p>}
 
       <h2>blogs</h2>
       {blogs.map(blog =>
